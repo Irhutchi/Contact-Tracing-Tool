@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# This scriptwill to present the information contained in contactDetails script in a manner that is easier to read for the user.
+RED='\033[0;31m'
+NC='\033{0m' #No colour
+red=`tput setaf 1`
+green=`tput setaf 1`
+reset=`tput sgr0`
+awk 'BEGIN  { print"${RED}Name\t\t\t Address\t\t    Phone\t\t Email\t\t\t   Date of Visit"   #print the title line once
+}
+	# statement below- width of the output is numeric and left-justified using '%-' minus
+        {FS=","}{printf"${RED}%-23s %-26s %-20s %-25s %-15s \n", $1,$2,$3,$4,$5} 
+
+END {print "End of file${NC}"}' contactDetails.sh | awk 'NR>3' | sort -k2n   #outputt all lines Starting with line 3 and sorting them alpha.. 
+

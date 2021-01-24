@@ -1,0 +1,66 @@
+
+#!/bin/bash
+
+clear
+
+awk 'BEGIN { print"Name"   #print the title line once
+}
+        # statement below- width of the output is numeric and left-justified using '%-' minus
+        {FS=","}{print $1}
+
+END {print "End of list"}' contactDetails.sh | sort
+
+# ANSI Colour Codes
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+RESET='\033[0m'
+
+
+echo -e  "${GREEN}Enter the name of the person would you like to delete >${RESET}"
+read removeName
+
+# quietly search the pattern entered against the conact details file.
+if grep -q "$removeName" contactDetails.sh; then
+
+	# count the number of matches using grep
+	echo -e "${GREEN}Number of matches for $removeName is:${RESET} "$(grep -c "$removeName" /home/compsys/Covid-19_Contact_Log_Tracing/contactDetails.sh)
+	echo 
+	#search the given file for lines containing a match to the user input, output only the matching lines, if any.
+	grep -inw "$removeName" /home/compsys/Covid-19_Contact_Log_Tracing/contactDetails.sh
+	echo
+	echo -e  "${GREEN}confirm email of person you want to delete >${RESET} "
+	read removeEmail
+
+	function userResponse ()
+		{
+		echo -e "${GREEN}Are you sure you want to delete $removeName from the database [yes/no]?${RESET} "
+		        read response
+
+		        case $response in
+		                [yY] | [yY][Ee][Ss] )
+		                       # echo grep -n $removeName"`
+		                        sed -i.bak "/$removeEmail/d" contactDetails.sh # delete user but create a backup of original
+		                        echo "deleting..." && sleep 3 && echo "$removeName deleted\!"
+		                        ./mainMenu.sh
+		                        ;;
+		                [nN] | [n|N][O|o] )
+		                        echo "Unsure? Better safe than sorry I say!"
+		                        ./mainMenu.sh
+		                        ;;
+		                [qQ] )
+		                	echo "Exiting..."
+		                	sleep 2
+		                	;;
+				*)
+		                        echo -e "${RED}invalid input${RESET}"
+		                        sleep 2
+		                        ;;
+			esac
+		}
+	userResponse
+
+	else
+	echo "No record of $removeName on the system"
+fi
+
+
